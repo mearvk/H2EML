@@ -1,0 +1,146 @@
+<apml>
+    <system> <!-- to and from computers is concern -->
+        <object class="input">
+            <listener class="ham radio in">
+                <consumer class="ethernet in"> <!-- listens for input from ham radio, relays it to savrator pjc -->
+                    <node class="ip" id="12.23.44.212">
+                        
+                    </node>                    
+                </consumer>
+            </listener>
+        </object>
+        <object class="output">
+            <listener class="ham radio out">
+                <producer class="ethernet out"> <!-- listens for output from computer, relays it to ham radio -->
+                    <node class="ip" id="12.23.44.212">
+                        
+                    </node>
+                </producer>
+            </listener>
+        </object>
+    </system>
+    
+    <!-- From ham radio to computer signal is concern -->
+    <system>     
+        <!--Only concerned with making packets to send to computers locally -->
+        <object class="ethernet packager"> 
+            <listener>
+                <producer id="ethprod" to="ham radio">
+                    
+                </producer>
+            </listener>
+            <listener>
+                <consumer id="ethcons" from=""> 
+                    
+                </consumer>
+            </listener>
+        </object>
+        
+        <object class="tcp/ip packager">
+            <listener>
+                <producer id="tcp/ip producer" to="ethcons">
+                    
+                </producer>
+            </listener>
+            <listener>
+                <consumer id="tcp/ip consumer" from="modulator framer" to="tcpipcons">
+                    
+                </consumer>
+            </listener>            
+        </object>
+        
+        <object class="modulator">
+            <listener>
+                <producer id="modulator framer" to="tcp/ip consumer">
+
+                </producer>
+            </listener> 
+            <listener>
+                <producer id="raw apple MAC producer" to="ham radio">
+                    /** @see apple spec 1.0028 */
+                    /** @author Tom Hudson PhD */
+                    /** @date 1/20/2017 */
+                    <!-- every 1/1000th a second an 'apple' tag comes in to reset phase drift -->
+                    [apple[raw[ethernet[tcip[data]]]]]  
+                    <spec>
+                        <requirement>
+                            org.bbx.phase.MAX <= 1.0%;
+                        </requirement>
+                    </spec>              
+                </producer>
+            </listener>                         
+            <listener>
+                <consumer id="raw apple MAC consumer" from="ham radio" to="modulator framer">
+                    /** @see apple spec 1.0028 */
+                    /* @author Tom Hudson PhD */
+                    /** @date 1/20/2017 */
+                    <!-- every 1/1000th a second an 'apple' tag comes in to reset phase drift -->
+                    [apple[raw[ethernet[tcip[data]]]]]
+                </consumer>
+            </listener>               
+        </object>
+        
+    </system>
+    
+    <!-- To ham radio from computer raw signal is concern --> 
+    <system>    
+        <!--Only concerned with making packets to send to computers locally -->
+        <object class="ethernet packager"> 
+            <listener>
+                <producer id="ethprod" to="ham radio">
+                    
+                </producer>
+            </listener>
+            <listener>
+                <consumer id="ethcons" from=""> 
+                    
+                </consumer>
+            </listener>
+        </object>
+        
+        <object class="tcp/ip packager">
+            <listener>
+                <producer id="tcp/ip producer" to="ethcons">
+                    
+                </producer>
+            </listener>
+            <listener>
+                <consumer id="tcp/ip consumer" from="modulator framer" to="tcpipcons">
+                    
+                </consumer>
+            </listener>            
+        </object>
+        
+        <object class="modulator">     
+            
+            <listener>
+                <producer id="raw apple MAC producer" to="ham radio">
+                    /** @see apple spec 1.0028 */
+                    /** @author Tom Hudson PhD */
+                    /** @date 1/20/2017 */
+                    <!-- every 1/1000th a second an 'apple' tag comes in to reset phase drift -->
+                    [apple[raw[ethernet[tcip[data]]]]]  
+            
+                </producer>
+            </listener> 
+                                    
+            <listener>
+                <consumer id="raw apple MAC consumer" from="ham radio" to="modulator framer">
+                    /** @see apple spec 1.0028 */
+                    /** @author Tom Hudson PhD */
+                    /** @date 1/20/2017 */
+                    <!-- every 1/1000th a second an 'apple' tag comes in to reset phase drift -->
+                    [apple[raw[ethernet[tcip[data]]]]]
+                    
+                    <spec>
+                        <!-- not more than 7.5% phase drift -->
+                        <requirement> 
+                            org.bbx.phase.delta +- 7.5%;
+                        </requirement>
+                    </spec>  
+                </consumer>
+            </listener>               
+        </object>
+        
+    </system>    
+</apml>
