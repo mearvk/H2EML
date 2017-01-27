@@ -1,4 +1,4 @@
-<apml>
+<apml language="c#">
     <system> <!-- to and from computers is concern -->
         <object class="input">
             <listener class="ham radio in">
